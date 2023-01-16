@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package com.excercise3.grpc.proto;
+
+option java_multiple_files = true;
+
+enum Category {
+    NO_CAT = 0;
+	CAT1 = 1;
+	CAT2 = 2;
+	CAT3 = 3;
+}
+
+message MessageRequest {
+}
+
+message MessageResponse {
+    string errCode = 1;
+}
+
+
+message Product {
+	int32 productId = 1;
+	string description = 2;
+	Category category = 3;
+	int32 quantity = 4;
+	double price = 5;
+	double updatedAt = 6;
+}
+
+message ProductList {
+	repeated Product productList = 1;
+}
+
+message MessageProductId {
+	int32 productId = 1;
+}
+
+message MessageCategoryId {
+	Category category = 1;
+}
+
+// 4. service, request/response
+service ProductService {
+    rpc addProduct(Product) returns (MessageResponse);
+    rpc getAll(MessageRequest) returns (ProductList);
+    rpc getProductById(MessageProductId) returns (Product);
+    rpc getAllProductByCategory(MessageCategoryId) returns (ProductList);
+    rpc getAllProductsGroupedByCategory(MessageRequest) returns (ProductList);
+    rpc updateProduct(Product) returns (MessageResponse);
+    
+} 
