@@ -64,7 +64,7 @@ public class MyGrpcServer {
 			if (!productMap.containsKey(request.getProductId()) && request.getPrice() >= 0
 					&& request.getQuantity() >= 0) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
-				productMap.put(request.getProductId(), request.newBuilder(request).build());
+				productMap.put(request.getProductId(), Product.newBuilder(request).build());
 			} else
 				response = MessageResponse.newBuilder()
 						.setErrCode("ProductId already present or Price and/or Quantity <0").build();
