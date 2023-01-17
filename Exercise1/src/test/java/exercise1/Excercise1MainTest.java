@@ -1,6 +1,6 @@
 package exercise1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,19 +12,19 @@ public class Excercise1MainTest {
 
 	@Test
 	public void test() {
-		TreeNode myTree = new TreeNode();
 
-		myTree.add(Category.CAT1, Category.CAT2, Category.CAT3);
-		myTree.add(Category.CAT3, Category.CAT2, Category.CAT1);
-		myTree.add(Category.CAT3, Category.CAT3, Category.CAT3);
-		myTree.add(Category.CAT1);
+		TreeNode myTree = new TreeNode(Category.CAT1);
 
-		List<Category> assertCategory = new ArrayList<Category>(Arrays.asList(Category.CAT2, Category.CAT2, Category.CAT2,
-				Category.CAT1, Category.CAT1, Category.CAT1));
-		
-		List<Category> aCategory = Excercise1Main.findAllDescendantsBy(Category.CAT2, myTree);
+		myTree.addChild(new TreeNode(Category.CAT1), new TreeNode(Category.CAT2), new TreeNode(Category.CAT3));
+		myTree.addChild(new TreeNode(Category.CAT3), new TreeNode(Category.CAT2), new TreeNode(Category.CAT1));
+		myTree.addChild(new TreeNode(Category.CAT3), new TreeNode(Category.CAT3), new TreeNode(Category.CAT3));
 
-		assertEquals(aCategory, assertCategory);
+		List<Category> assertCategory = new ArrayList<Category>(
+				Arrays.asList(Category.CAT2, Category.CAT1, Category.CAT1, Category.CAT1));
+
+		List<Category> aCategory = myTree.findAllDescendantsBy(Category.CAT2, myTree);
+
+		assertEquals(assertCategory, aCategory);
 	}
 
 }

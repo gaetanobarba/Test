@@ -4,50 +4,51 @@
 package exercise1;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/**
- * @author teigaba
- *
- */
 /**
  * A node of the tree.
  */
-class TreeNode {
+public class TreeNode {
 
-	private Map<Category, List<Category>> children;
-
-	public TreeNode() {
-		super();
-		children = new HashMap<>();
-		children.put(Category.CAT3, new ArrayList<>());
-		children.put(Category.CAT2, new ArrayList<>());
-		children.put(Category.CAT1, new ArrayList<>());
-	}
+	Category category;
+	List<TreeNode> children;
 
 	public TreeNode(Category category) {
-		super();
-		add(category);
+		this.category = category;
+		this.children = new ArrayList<TreeNode>();
 	}
 
-	public void add(Category... categories) {
-		for (Category category : categories) {
-			add(category);
+	public void addChild(TreeNode node) {
+		this.children.add(node);
+	}
+
+	public void addChild(TreeNode... nodes) {
+		for (TreeNode treeNode : nodes) {
+			this.children.add(treeNode);
 		}
 	}
 
-	public void add(Category category) {
+	/**
+	 * @param category the category of which find all descendants
+	 * @param root     the root node of the tree
+	 *
+	 * @return the list of all descendants categories, including the category passed
+	 *         as input
+	 */
+	public List<Category> findAllDescendantsBy(Category category, TreeNode root) {
 
-		children.get(category).add(category);
-	}
+		List<Category> ret = new ArrayList<>();
+		ret.add(category);
 
-	public void clear() {
-		children.clear();
-	}
+		if (root.category.value() < category.value())
+			ret.add(root.category);
 
-	public ArrayList<Category> getChildren(Category category) {
-		return (ArrayList<Category>) children.get(category);
+		for (TreeNode node : this.children) {
+			if (node.category.value() < category.value())
+				ret.add(node.category);
+		}
+
+		return ret;
 	}
 }
