@@ -1,19 +1,3 @@
-/*
- * Copyright 2016 Google, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.excercise3.grpc;
 
 import java.io.IOException;
@@ -110,7 +94,8 @@ public class MyGrpcServer {
 				StreamObserver<ProductList> responseObserver) {
 
 			List<Product> listAllProductsGroupedByCategory = productMap.values().stream()
-					.sorted(Comparator.comparingInt(Product::getCategoryValue)).collect(Collectors.toCollection(ArrayList::new));
+					.sorted(Comparator.comparingInt(Product::getCategoryValue))
+					.collect(Collectors.toCollection(ArrayList::new));
 
 			ProductList response = ProductList.newBuilder().addAllProductList(listAllProductsGroupedByCategory).build();
 			responseObserver.onNext(response);
@@ -120,7 +105,7 @@ public class MyGrpcServer {
 		@Override
 		public void updateProduct(Product request, StreamObserver<MessageResponse> responseObserver) {
 			MessageResponse response = MessageResponse.newBuilder().setErrCode("OK").build();
-			
+
 			if (productMap.containsKey(request.getProductId())) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
 				productMap.put(request.getProductId(), request.newBuilder(request).build());
