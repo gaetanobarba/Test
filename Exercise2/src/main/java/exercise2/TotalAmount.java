@@ -20,10 +20,10 @@ public class TotalAmount {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		List<Product> myProducts = new ArrayList<>(List.of(new Product(Category.CAT1, 10, 1),
+		List<Product> products = new ArrayList<>(List.of(new Product(Category.CAT1, 10, 1),
 				new Product(Category.CAT2, 10, 2), new Product(Category.CAT2, 10, 3)));
 
-		double totalAmount = amount(myProducts, Category.CAT2);
+		double totalAmount = amount(products, Category.CAT2);
 
 		System.out.print("Total Amount is: " + totalAmount);
 	}
@@ -41,7 +41,8 @@ public class TotalAmount {
 		AtomicReference<Double> amount = new AtomicReference<>((double) 0);
 
 		Optional.ofNullable(products).ifPresentOrElse(v -> {
-			List<Product> productsCat = products.stream().filter(cat -> cat.getCategory().equals(category)).collect(Collectors.toCollection(ArrayList::new));
+			List<Product> productsCat = products.stream().filter(cat -> cat.getCategory().equals(category))
+					.collect(Collectors.toList());
 			Stream.of(productsCat).forEach(s -> System.out.println(s));
 			for (Product product : productsCat) {
 				double partialAmount = product.getPrice() * product.getQuantity();

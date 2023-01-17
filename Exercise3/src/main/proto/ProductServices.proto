@@ -14,8 +14,15 @@ enum Category {
 message MessageRequest {
 }
 
+enum ResponseCode {
+	OK = 0;
+	ERROR_1 = 1;
+	ERROR_2 = 2;
+}
+
 message MessageResponse {
-    string errCode = 1;
+    ResponseCode responceCode = 1;
+    string description = 2;
 }
 
 

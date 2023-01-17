@@ -9,14 +9,22 @@ import com.excercise3.grpc.proto.Product;
 import com.excercise3.grpc.proto.ProductList;
 import com.excercise3.grpc.proto.ProductServiceGrpc;
 
+import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public class MyGrpcClient {
+
+	static ProductServiceGrpc.ProductServiceBlockingStub stub;
+
+	public MyGrpcClient(Channel channel) {
+		stub = ProductServiceGrpc.newBlockingStub(channel);
+	}
+
 	public static void main(String[] args) throws InterruptedException {
 		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080).usePlaintext().build();
 
-		ProductServiceGrpc.ProductServiceBlockingStub stub = ProductServiceGrpc.newBlockingStub(channel);
+		stub = ProductServiceGrpc.newBlockingStub(channel);
 
 		Product product1 = Product.newBuilder().setProductId(1).setCategory(Category.CAT2).setPrice(5).setQuantity(10)
 				.buildPartial();

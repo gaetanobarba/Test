@@ -16,6 +16,7 @@ import com.excercise3.grpc.proto.MessageResponse;
 import com.excercise3.grpc.proto.Product;
 import com.excercise3.grpc.proto.ProductList;
 import com.excercise3.grpc.proto.ProductServiceGrpc.ProductServiceImplBase;
+import com.excercise3.grpc.proto.ResponseCode;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -43,15 +44,16 @@ public class MyGrpcServer {
 		public void addProduct(Product request, StreamObserver<MessageResponse> responseObserver) {
 			System.out.println(request);
 
-			MessageResponse response = MessageResponse.newBuilder().setErrCode("OK").build();
+			MessageResponse response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
+					.setDescription("OK").build();
 
 			if (!productMap.containsKey(request.getProductId()) && request.getPrice() >= 0
 					&& request.getQuantity() >= 0) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
 				productMap.put(request.getProductId(), Product.newBuilder(request).build());
 			} else
-				response = MessageResponse.newBuilder()
-						.setErrCode("ProductId already present or Price and/or Quantity <0").build();
+				response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
+						.setDescription("ProductId already present or Price and/or Quantity <0").build();
 
 			responseObserver.onNext(response);
 			responseObserver.onCompleted();
@@ -104,14 +106,15 @@ public class MyGrpcServer {
 
 		@Override
 		public void updateProduct(Product request, StreamObserver<MessageResponse> responseObserver) {
-			MessageResponse response = MessageResponse.newBuilder().setErrCode("OK").build();
+			MessageResponse response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
+					.setDescription("OK").build();
 
 			if (productMap.containsKey(request.getProductId())) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
 				productMap.put(request.getProductId(), request.newBuilder(request).build());
 			} else
-				response = MessageResponse.newBuilder()
-						.setErrCode("ProductId: " + request.getProductId() + " not present!").build();
+				response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
+						.setDescription("ProductId: " + request.getProductId() + " not present!").build();
 
 			responseObserver.onNext(response);
 			responseObserver.onCompleted();
