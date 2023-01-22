@@ -17,6 +17,7 @@ import org.mockito.ArgumentMatchers;
 import com.excercise3.grpc.proto.MessageResponse;
 import com.excercise3.grpc.proto.Product;
 import com.excercise3.grpc.proto.ProductServiceGrpc;
+import com.excercise3.grpc.proto.ResponseCode;
 
 import io.grpc.ManagedChannel;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -44,12 +45,17 @@ public class MyGrpcClientTest {
 				// You might need to implement necessary behaviors for your test here, like
 				// this:
 				//
-				// @Override
-				// public void sayHello(HelloRequest request, StreamObserver<HelloReply>
-				// respObserver) {
-				// respObserver.onNext(HelloReply.getDefaultInstance());
-				// respObserver.onCompleted();
-				// }
+				@Override
+				public void addProduct(Product request, StreamObserver<MessageResponse> responseObserver) {
+					System.out.println(request);
+
+					MessageResponse response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
+							.setDescription("OK").build();
+
+					responseObserver.onNext(response);
+					responseObserver.onCompleted();
+				}
+
 			}));
 
 	private MyGrpcClient client;
@@ -68,7 +74,7 @@ public class MyGrpcClientTest {
 		ManagedChannel channel = grpcCleanup
 				.register(InProcessChannelBuilder.forName(serverName).directExecutor().build());
 
-		// Create a HelloWorldClient using the in-process channel;
+		// Create a MyGrpcClient using the in-process channel;
 		client = new MyGrpcClient(channel);
 	}
 
@@ -80,7 +86,7 @@ public class MyGrpcClientTest {
 	public void greet_messageDeliveredToServer() {
 		ArgumentCaptor<Product> requestCaptor = ArgumentCaptor.forClass(Product.class);
 
-		// client.greet("test name");
+		client.operaton(1);
 
 		verify(serviceImpl).addProduct(requestCaptor.capture(),
 				ArgumentMatchers.<StreamObserver<MessageResponse>>any());

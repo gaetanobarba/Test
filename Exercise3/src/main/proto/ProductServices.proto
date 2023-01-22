@@ -32,7 +32,7 @@ message Product {
 	Category category = 3;
 	int32 quantity = 4;
 	double price = 5;
-	double updatedAt = 6;
+	int64 updatedAt = 6;
 }
 
 message ProductList {

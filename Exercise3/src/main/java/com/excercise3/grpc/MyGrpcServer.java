@@ -17,6 +17,7 @@ import com.excercise3.grpc.proto.Product;
 import com.excercise3.grpc.proto.ProductList;
 import com.excercise3.grpc.proto.ProductServiceGrpc.ProductServiceImplBase;
 import com.excercise3.grpc.proto.ResponseCode;
+import com.exercise3.common.ProductAdapter;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -27,7 +28,7 @@ import io.grpc.stub.StreamObserver;
  */
 public class MyGrpcServer {
 
-	private static Map<Integer, Product> productMap = new HashMap<Integer, Product>();
+	private static Map<Integer, ProductAdapter> productMap = new HashMap<Integer, ProductAdapter>();
 
 	static public void main(String[] args) throws IOException, InterruptedException {
 		Server server = ServerBuilder.forPort(8080).addService(new ProductServiceImpl()).build();
@@ -50,7 +51,7 @@ public class MyGrpcServer {
 			if (!productMap.containsKey(request.getProductId()) && request.getPrice() >= 0
 					&& request.getQuantity() >= 0) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
-				productMap.put(request.getProductId(), Product.newBuilder(request).build());
+				productMap.put(request.getProductId(), new ProductAdapter(request));
 			} else
 				response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
 						.setDescription("ProductId already present or Price and/or Quantity <0").build();
@@ -62,7 +63,7 @@ public class MyGrpcServer {
 		@Override
 		public void getAll(MessageRequest request, StreamObserver<ProductList> responseObserver) {
 
-			List<Product> productList = productMap.values().stream().collect(Collectors.toList());
+			List<Product> productList = productMap.values().stream().map(p -> p.decode()).collect(Collectors.toList());
 
 			ProductList response = ProductList.newBuilder().addAllProductList(productList).build();
 			responseObserver.onNext(response);
@@ -73,7 +74,8 @@ public class MyGrpcServer {
 		@Override
 		public void getProductById(MessageProductId request, StreamObserver<Product> responseObserver) {
 
-			Product response = productMap.containsKey(request.getProductId()) ? productMap.get(request.getProductId())
+			Product response = productMap.containsKey(request.getProductId())
+					? productMap.get(request.getProductId()).decode()
 					: Product.newBuilder().buildPartial();
 			responseObserver.onNext(response);
 			responseObserver.onCompleted();
@@ -83,7 +85,7 @@ public class MyGrpcServer {
 		public void getAllProductByCategory(MessageCategoryId request, StreamObserver<ProductList> responseObserver) {
 
 			Category category = request.getCategory();
-			List<Product> listAllProductByCategory = productMap.values().stream()
+			List<Product> listAllProductByCategory = productMap.values().stream().map(p -> p.decode())
 					.filter(c -> c.getCategory().equals(category)).collect(Collectors.toList());
 
 			ProductList response = ProductList.newBuilder().addAllProductList(listAllProductByCategory).build();
@@ -95,7 +97,7 @@ public class MyGrpcServer {
 		public void getAllProductsGroupedByCategory(MessageRequest request,
 				StreamObserver<ProductList> responseObserver) {
 
-			List<Product> listAllProductsGroupedByCategory = productMap.values().stream()
+			List<Product> listAllProductsGroupedByCategory = productMap.values().stream().map(p -> p.decode())
 					.sorted(Comparator.comparingInt(Product::getCategoryValue))
 					.collect(Collectors.toCollection(ArrayList::new));
 
@@ -111,7 +113,7 @@ public class MyGrpcServer {
 
 			if (productMap.containsKey(request.getProductId())) {
 				request.toBuilder().setUpdatedAt(System.currentTimeMillis());
-				productMap.put(request.getProductId(), request.newBuilder(request).build());
+				productMap.put(request.getProductId(), new ProductAdapter(request));
 			} else
 				response = MessageResponse.newBuilder().setResponceCode(ResponseCode.OK)
 						.setDescription("ProductId: " + request.getProductId() + " not present!").build();
